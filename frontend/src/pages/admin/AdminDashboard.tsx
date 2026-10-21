@@ -280,6 +280,26 @@ export const AdminDashboard = () => {
       {/* Tab 1: Applications Management */}
       {activeTab === 'applications' && (
         <div className="space-y-4">
+          {/* Notification Guide Banner */}
+          <div className="bg-emerald-50 border border-emerald-300 rounded-2xl p-4 text-xs text-emerald-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+            <div className="space-y-1">
+              <span className="font-bold text-emerald-900 block text-sm">
+                📱 آن لائن درخواستوں کی وصولی کا فعال نظام (Live WhatsApp & Email Sync)
+              </span>
+              <p className="text-emerald-800 leading-relaxed">
+                تمام طلبا جب ویب سائٹ پر فارم بھرتے ہیں تو ان کا فارم خودکار طور پر تیار ہو کر سیدھا آپ کے واٹس ایپ (<strong className="text-emerald-950 font-mono">03282885660</strong>) اور ای میل پر بھیج دیا جاتا ہے تاکہ کوئی بھی درخواست ضائع نہ ہو۔
+              </p>
+            </div>
+            <a
+              href="https://wa.me/923282885660"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-xs shadow-sm flex-shrink-0"
+            >
+              <span>اپنا واٹس ایپ کھولیں</span>
+            </a>
+          </div>
+
           {/* Filter Bar */}
           <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-white p-4 rounded-2xl border border-slate-200">
             <div className="relative w-full sm:w-72">

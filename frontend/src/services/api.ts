@@ -312,7 +312,7 @@ export const api = {
       }
     } catch (_) {}
 
-    throw new Error('غلط یوزر نیم یا پاسورڈ! درست پاسورڈ "حادی قرآن 2026" درج کریں۔ (Invalid credentials)');
+    throw new Error('غلط یوزر نیم یا پاسورڈ! براہ کرم درست معلومات درج کریں۔ (Invalid username or password)');
   },
 
   async getAdminMe() {

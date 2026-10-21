@@ -36,34 +36,34 @@ export const Header = () => {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-emerald-900/10 shadow-sm transition-all">
       {/* Top Utility Bar: Islamic Date & International Time Clock */}
-      <div className="bg-emerald-950 text-emerald-100 text-xs py-1.5 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-3">
+      <div className="bg-emerald-950 text-emerald-100 text-[11px] sm:text-xs py-1 px-4 sm:px-6 border-b border-emerald-900/40">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <IslamicDateBadge />
-            <span className="hidden md:inline-block text-emerald-600">|</span>
-            <span className="hidden md:inline-block text-emerald-300 font-medium">
-              Teacher & Administrator: Abdul Hadi Panhwar
+            <span className="hidden lg:inline-block text-emerald-700">|</span>
+            <span className="hidden lg:inline-block text-emerald-300 font-medium">
+              Teacher: Abdul Hadi Panhwar
             </span>
           </div>
 
-          <div className="flex items-center gap-3 ml-auto">
+          <div className="flex items-center gap-2.5 ml-auto flex-shrink-0">
             <TimezoneClock />
             {/* Language Switcher */}
             <button
               onClick={toggleLanguage}
-              className="flex items-center gap-1.5 bg-emerald-800/80 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-full text-xs font-medium transition-colors border border-emerald-600/40"
+              className="flex items-center gap-1 bg-emerald-800 hover:bg-emerald-700 text-white px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors border border-emerald-600/40 flex-shrink-0"
               title="Toggle Language / زبان تبدیل کریں"
             >
-              <Languages className="w-3.5 h-3.5" />
+              <Languages className="w-3 h-3" />
               <span>{language === 'en' ? 'اردو' : 'English'}</span>
             </button>
             {/* Admin Login Link */}
             <Link
               to="/admin/login"
-              className="hidden lg:flex items-center gap-1 text-emerald-300 hover:text-white transition-colors text-xs font-medium"
+              className="flex items-center gap-1 text-emerald-300 hover:text-white transition-colors text-[11px] font-medium flex-shrink-0"
               title="Administrator Portal"
             >
-              <UserCheck className="w-3.5 h-3.5" />
+              <UserCheck className="w-3 h-3" />
               <span>Admin</span>
             </Link>
           </div>
