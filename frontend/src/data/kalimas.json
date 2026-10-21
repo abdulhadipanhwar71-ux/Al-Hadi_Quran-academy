@@ -1,0 +1,68 @@
+[
+  {
+    "id": 1,
+    "number": 1,
+    "name_arabic": "الْكَلِمَةُ الطَّيِّبَةُ",
+    "name_english": "Kalima Tayyibah (Word of Purity)",
+    "name_urdu": "کلمہ طیبہ (پاکی کا کلمہ)",
+    "text_arabic": "لَا إِلٰهَ إِلَّا اللّٰهُ مُحَمَّدٌ رَّسُولُ اللّٰهِ",
+    "text_urdu": "اللہ کے سوا کوئی معبود نہیں، محمد (صلی اللہ علیہ وآلہ وسلم) اللہ کے رسول ہیں۔",
+    "text_english": "There is no deity worthy of worship except Allah, Muhammad (peace be upon him) is the Messenger of Allah.",
+    "reference": "Al-Bukhari & Muslim"
+  },
+  {
+    "id": 2,
+    "number": 2,
+    "name_arabic": "كَلِمَةُ الشَّهَادَةِ",
+    "name_english": "Kalima Shahadah (Word of Testimony)",
+    "name_urdu": "کلمہ شہادت (گواہی کا کلمہ)",
+    "text_arabic": "أَشْهَدُ أَنْ لَّا إِلٰهَ إِلَّا اللّٰهُ وَحْدَهُ لَا شَرِيكَ لَهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ",
+    "text_urdu": "میں گواہی دیتا ہوں کہ اللہ کے سوا کوئی معبود نہیں، وہ اکیلا ہے، اس کا کوئی شریک نہیں، اور میں گواہی دیتا ہوں کہ محمد (صلی اللہ علیہ وآلہ وسلم) اس کے بندے اور رسول ہیں۔",
+    "text_english": "I bear witness that there is no deity except Allah, He is alone and has no partner, and I bear witness that Muhammad (peace be upon him) is His servant and His Messenger.",
+    "reference": "Sahih Muslim"
+  },
+  {
+    "id": 3,
+    "number": 3,
+    "name_arabic": "كَلِمَةُ التَّمْجِيدِ",
+    "name_english": "Kalima Tamjeed (Word of Glorification)",
+    "name_urdu": "کلمہ تمجید (بزرگی کا کلمہ)",
+    "text_arabic": "سُبْحَانَ اللّٰهِ وَالْحَمْدُ لِلّٰهِ وَلَا إِلٰهَ إِلَّا اللّٰهُ وَاللّٰهُ أَكْبَرُ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّٰهِ الْعَلِيِّ الْعَظِيمِ",
+    "text_urdu": "اللہ پاک ہے اور تمام تعریفیں اللہ ہی کے لیے ہیں اور اللہ کے سوا کوئی معبود نہیں اور اللہ سب سے بڑا ہے، اور گناہوں سے بچنے کی طاقت اور نیکی کرنے کی قوت نہیں مگر اللہ کی طرف سے جو عالی شان اور عظمت والا ہے۔",
+    "text_english": "Glory be to Allah, and all praise is due to Allah, and there is no deity except Allah, and Allah is the Greatest. And there is no power nor strength except with Allah, the Most High, the Supreme.",
+    "reference": "Sunan Ibn Majah & Tirmidhi"
+  },
+  {
+    "id": 4,
+    "number": 4,
+    "name_arabic": "كَلِمَةُ التَّوْحِيدِ",
+    "name_english": "Kalima Tawheed (Word of Oneness)",
+    "name_urdu": "کلمہ توحید (ایک ماننے کا کلمہ)",
+    "text_arabic": "لَا إِلٰهَ إِلَّا اللّٰهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ يُحْيِي وَيُمِيتُ وَهُوَ حَيٌّ لَّا يَمُوتُ أَبَدًا أَبَدًا، ذُو الْجَلَالِ وَالْإِكْرَامِ، بِيَدِهِ الْخَيْرُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيرٌ",
+    "text_urdu": "اللہ کے سوا کوئی معبود نہیں، وہ اکیلا ہے، اس کا کوئی شریک نہیں۔ اسی کی بادشاہی ہے اور اسی کے لیے تمام تعریفیں ہیں، وہی جلاتا ہے اور وہی مارتا ہے اور وہ ہمیشہ زندہ ہے، کبھی نہیں مرے گا۔ بڑی عظمت اور بزرگی والا ہے، اسی کے ہاتھ میں بھلائی ہے اور وہ ہر چیز پر قادر ہے۔",
+    "text_english": "There is no deity except Allah, He is alone, having no partner. His is the sovereignty and His is the praise. He gives life and causes death, and He is Ever-Living, never dying. Possessor of Majesty and Honor, in His hand is all good, and He has power over all things.",
+    "reference": "Sunan At-Tirmidhi"
+  },
+  {
+    "id": 5,
+    "number": 5,
+    "name_arabic": "كَلِمَةُ الاسْتِغْفَارِ",
+    "name_english": "Kalima Astaghfar (Word of Forgiveness)",
+    "name_urdu": "کلمہ استغفار (بخشش مانگنے کا کلمہ)",
+    "text_arabic": "أَسْتَغْفِرُ اللّٰهَ رَبِّي مِنْ كُلِّ ذَنْبٍ أَذْنَبْتُهُ عَمْدًا أَوْ خَطَأً سِرًّا أَوْ عَلَانِيَةً وَأَتُوبُ إِلَيْهِ مِنَ الذَّنْبِ الَّذِي أَعْلَمُ وَمِنَ الذَّنْبِ الَّذِي لَا أَعْلَمُ، إِنَّكَ أَنْتَ عَلَّامُ الْغُيُوبِ وَسَتَّارُ الْعُيُوبِ وَغَفَّارُ الذُّنُوبِ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّٰهِ الْعَلِيِّ الْعَظِيمِ",
+    "text_urdu": "میں اللہ سے اپنے تمام گناہوں کی بخشش مانگتا ہوں جو میں نے جان بوجھ کر کیے یا بھولے سے، چھپ کر کیے یا کھلم کھلا، اور میں اس کی بارگاہ میں توبہ کرتا ہوں اس گناہ سے جسے میں جانتا ہوں اور اس گناہ سے بھی جسے میں نہیں جانتا۔ بیشک تو تمام پوشیدہ باتوں کو جاننے والا اور عیبوں کو چھپانے والا اور گناہوں کو بخشنے والا ہے، اور گناہ سے بچنے اور نیکی کرنے کی طاقت اللہ ہی کی طرف سے ہے جو بلند و برتر اور عظمت والا ہے۔",
+    "text_english": "I seek forgiveness from Allah, my Lord, for every sin I committed knowingly or unknowingly, secretly or openly, and I turn to Him in repentance from the sin I know and from the sin I do not know. Truly, You are the Knower of the unseen, the Concealer of faults, and the Forgiver of sins, and there is no power nor strength except with Allah, the Most High, the Supreme.",
+    "reference": "Al-Bukhari & Musnad Ahmad"
+  },
+  {
+    "id": 6,
+    "number": 6,
+    "name_arabic": "كَلِمَةُ رَدِّ الْكُفْرِ",
+    "name_english": "Kalima Radd-e-Kufr (Word of Refutation of Disbelief)",
+    "name_urdu": "کلمہ رد کفر (کفر سے بیزاری کا کلمہ)",
+    "text_arabic": "اللّٰهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ أَنْ أُشْرِكَ بِكَ شَيْئًا وَّأَنَا أَعْلَمُ بِهِ، وَأَسْتَغْفِرُكَ لِمَا لَا أَعْلَمُ بِهِ، تُبْتُ عَنْهُ وَتَبَرَّأْتُ مِنَ الْكُفْرِ وَالشِّرْكِ وَالْكِذْبِ وَالْغِيبَةِ وَالْبِدْعَةِ وَالنَّمِيمَةِ وَالْفَوَاحِشِ وَالْبُهْتَانِ وَالْمَعَاصِي كُلِّهَا، وَأَسْلَمْتُ وَأَقُولُ لَا إِلٰهَ إِلَّا اللّٰهُ مُحَمَّدٌ رَّسُولُ اللّٰهِ",
+    "text_urdu": "اے اللہ! میں تیری پناہ مانگتا ہوں اس بات سے کہ میں تیرے ساتھ کسی چیز کو شریک ٹھہراؤں جان بوجھ کر، اور میں تجھ سے معافی مانگتا ہوں اس گناہ کی جسے میں نہیں جانتا۔ میں نے اس سے توبہ کی اور بیزاری اختیار کی کفر، شرک، جھوٹ، غیبت، بدعت، چغل خوری، بے حیائی، بہتان اور تمام گناہوں سے، اور میں اسلام لایا اور کہتا ہوں کہ اللہ کے سوا کوئی معبود نہیں، محمد (صلی اللہ علیہ وآلہ وسلم) اللہ کے رسول ہیں۔",
+    "text_english": "O Allah, I seek refuge in You from knowingly associating any partner with You, and I seek Your forgiveness for that which I do not know. I repent from it, and I dissociate myself from disbelief, polytheism, lying, backbiting, heresy, tale-bearing, obscenity, slander, and all disobedience. I submit to Islam and say: There is no deity except Allah, Muhammad (peace be upon him) is the Messenger of Allah.",
+    "reference": "Musnad Ahmad & Al-Adab Al-Mufrad"
+  }
+]

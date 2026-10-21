@@ -38,6 +38,13 @@ export const Admission = () => {
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [lastSubmitted, setLastSubmitted] = useState<{
+    name: string;
+    courseName: string;
+    country: string;
+    phone: string;
+    type: string;
+  } | null>(null);
 
   useEffect(() => {
     api.getCourses().then(setCourses).catch(() => {});
@@ -80,6 +87,15 @@ export const Admission = () => {
 
     setSubmitting(true);
     try {
+      const selectedCourse = courses.find(c => c.id === courseId);
+      const submissionInfo = {
+        name: studentName,
+        courseName: selectedCourse ? (language === 'ur' ? selectedCourse.title_ur : selectedCourse.title_en) : 'Quran Course',
+        country,
+        phone: contactPhone || 'Not provided',
+        type: applicationType
+      };
+
       const res = await api.submitAdmission({
         student_name: studentName,
         student_age: Number(studentAge),
@@ -99,6 +115,8 @@ export const Admission = () => {
       });
 
       setSuccessMessage(res.message);
+      setLastSubmitted(submissionInfo);
+
       // Reset sensitive fields
       setStudentName('');
       setStudentAge('');
@@ -129,7 +147,7 @@ export const Admission = () => {
 
       {/* Success Notification */}
       {successMessage && (
-        <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-950 space-y-3 shadow-sm animate-fade-in">
+        <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-950 space-y-4 shadow-sm animate-fade-in">
           <div className="flex items-center gap-3 font-bold text-base text-emerald-900">
             <CheckCircle2 className="w-6 h-6 text-emerald-700 flex-shrink-0" />
             <span>Application Successfully Submitted!</span>
@@ -140,6 +158,26 @@ export const Admission = () => {
           <div className="text-xs text-emerald-800 bg-white/70 p-3 rounded-xl border border-emerald-200">
             <strong>Next Step:</strong> Administrator Abdul Hadi will review your preferred timezone and timetable, and contact you via email or WhatsApp to schedule your trial or introductory lesson.
           </div>
+          {lastSubmitted && (
+            <div className="pt-2">
+              <a
+                href={`https://wa.me/923282885660?text=${encodeURIComponent(
+                  `السلام علیکم ورحمۃ اللہ، میں نے الحادی آن لائن قرآن اکیڈمی کی ویب سائٹ پر ایڈمیشن فارم جمع کرایا ہے۔\n` +
+                  `طالب علم: ${lastSubmitted.name}\n` +
+                  `درخواست کی نوعیت: ${lastSubmitted.type}\n` +
+                  `کورس: ${lastSubmitted.courseName}\n` +
+                  `ملک: ${lastSubmitted.country}\n` +
+                  `رابطہ نمبر: ${lastSubmitted.phone}`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 w-full py-3.5 px-4 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all"
+              >
+                <Phone className="w-5 h-5" />
+                <span>{language === 'ur' ? 'معلم عبد الہادی کو واٹس ایپ پر فوری تفصیلات بھیجیں' : 'Send Details to Teacher Abdul Hadi via WhatsApp'}</span>
+              </a>
+            </div>
+          )}
         </div>
       )}
 
