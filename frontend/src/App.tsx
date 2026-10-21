@@ -39,6 +39,7 @@ const AppLayout = () => {
           <Route path="/courses" element={<Courses />} />
           <Route path="/quran" element={<Quran />} />
           <Route path="/quran-translation" element={<QuranTranslation />} />
+          <Route path="/translation" element={<QuranTranslation />} />
           <Route path="/six-kalimas" element={<SixKalimas />} />
           <Route path="/masnoon-duas" element={<MasnoonDuas />} />
           <Route path="/teaching-method" element={<TeachingMethod />} />
