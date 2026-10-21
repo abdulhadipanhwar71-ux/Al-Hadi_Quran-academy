@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Users, BookOpen, Calendar, CheckCircle2, Clock, AlertCircle,
-  Search, Filter, LogOut, Video, Plus, Edit2, ShieldAlert, Check, X, Eye
+  Search, Filter, LogOut, Video, Plus, Edit2, ShieldAlert, Check, X, Eye,
+  RefreshCw, Trash2, MessageCircle
 } from 'lucide-react';
 import { api } from '../../services/api';
 import {
@@ -69,7 +70,19 @@ export const AdminDashboard = () => {
   const [showAddScheduleModal, setShowAddScheduleModal] = useState(false);
 
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
+
+  // Manual Application State
+  const [showAddAppModal, setShowAddAppModal] = useState(false);
+  const [newStudentName, setNewStudentName] = useState('');
+  const [newStudentAge, setNewStudentAge] = useState('10');
+  const [newGuardianName, setNewGuardianName] = useState('');
+  const [newPhone, setNewPhone] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [newCourseId, setNewCourseId] = useState(1);
+  const [newCountry, setNewCountry] = useState('Pakistan');
+  const [newAppType, setNewAppType] = useState<'Admission' | 'Free Trial'>('Admission');
 
   // Auth Verification
   useEffect(() => {
@@ -98,10 +111,65 @@ export const AdminDashboard = () => {
       setCourses(crs);
       setSchedules(scheds);
     } catch (err) {
-      // If unauthorized, redirect to login
       navigate('/admin/login');
     } finally {
       setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const handleManualRefresh = async () => {
+    setRefreshing(true);
+    await loadDashboardData();
+    setActionMessage('درخواستیں تازہ کر دی گئیں۔ (Data refreshed successfully)');
+  };
+
+  const handleDeleteApplication = async (appId: number) => {
+    if (!window.confirm('کیا آپ واقعی یہ درخواست حذف کرنا چاہتے ہیں؟ (Are you sure you want to delete this application?)')) {
+      return;
+    }
+    try {
+      await api.deleteApplication(appId);
+      setActionMessage('درخواست کامیابی سے حذف کر دی گئی۔ (Application deleted successfully)');
+      setSelectedApp(null);
+      loadDashboardData();
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete');
+    }
+  };
+
+  const handleCreateManualApplication = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newStudentName.trim() || !newPhone.trim()) {
+      alert('براہ کرم طالب علم کا نام اور فون نمبر ضرور درج کریں۔');
+      return;
+    }
+    try {
+      await api.submitAdmission({
+        student_name: newStudentName.trim(),
+        student_age: Number(newStudentAge) || 12,
+        is_child: Number(newStudentAge) < 18,
+        guardian_name: newGuardianName.trim() || undefined,
+        country: newCountry,
+        timezone: 'Asia/Karachi',
+        course_id: Number(newCourseId),
+        preferred_days: 'Monday to Friday',
+        preferred_time: '5:00 PM - 7:00 PM',
+        contact_phone: newPhone.trim(),
+        contact_email: newEmail.trim() || 'student@alhadi.academy',
+        preferred_language: 'Urdu',
+        application_type: newAppType,
+        notes: 'Manually added by Abdul Hadi Panhwar'
+      });
+      setShowAddAppModal(false);
+      setNewStudentName('');
+      setNewGuardianName('');
+      setNewPhone('');
+      setNewEmail('');
+      setActionMessage('نئی درخواست کامیابی سے شامل ہو گئی ہے۔ (New application added successfully)');
+      loadDashboardData();
+    } catch (err: any) {
+      alert(err.message || 'Failed to add application');
     }
   };
 
@@ -300,32 +368,52 @@ export const AdminDashboard = () => {
             </a>
           </div>
 
-          {/* Filter Bar */}
+          {/* Filter & Action Bar */}
           <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-white p-4 rounded-2xl border border-slate-200">
             <div className="relative w-full sm:w-72">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Search name, email, country..."
+                placeholder="Search name, phone, email, country..."
                 value={appSearch}
                 onChange={(e) => setAppSearch(e.target.value)}
                 className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-700"
               />
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Filter className="w-4 h-4 text-slate-400" />
-              <select
-                value={appStatusFilter}
-                onChange={(e) => setAppStatusFilter(e.target.value)}
-                className="text-xs border border-slate-200 rounded-xl px-3 py-2 bg-white"
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+              <div className="flex items-center gap-1.5">
+                <Filter className="w-4 h-4 text-slate-400" />
+                <select
+                  value={appStatusFilter}
+                  onChange={(e) => setAppStatusFilter(e.target.value)}
+                  className="text-xs border border-slate-200 rounded-xl px-3 py-2 bg-white"
+                >
+                  <option value="">All Statuses (تمام درخواستیں)</option>
+                  <option value="Pending Review">Pending Review (زیرِ غور)</option>
+                  <option value="Approved">Approved (منظور شدہ)</option>
+                  <option value="Rejected">Rejected (مسترد شدہ)</option>
+                  <option value="More Information Required">More Information Required (مزید معلومات درکار)</option>
+                </select>
+              </div>
+
+              <button
+                onClick={handleManualRefresh}
+                disabled={refreshing || loading}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 transition-colors"
+                title="Refresh admissions from cloud"
               >
-                <option value="">All Statuses (تمام درخواستیں)</option>
-                <option value="Pending Review">Pending Review (زیرِ غور)</option>
-                <option value="Approved">Approved (منظور شدہ)</option>
-                <option value="Rejected">Rejected (مسترد شدہ)</option>
-                <option value="More Information Required">More Information Required (مزید معلومات درکار)</option>
-              </select>
+                <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-emerald-600' : 'text-slate-500'}`} />
+                <span>ریفریش (Refresh)</span>
+              </button>
+
+              <button
+                onClick={() => setShowAddAppModal(true)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>نئی درخواست (+ Add)</span>
+              </button>
             </div>
           </div>
 
@@ -334,10 +422,10 @@ export const AdminDashboard = () => {
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[10px]">
-                  <th className="py-3.5 px-4">Student</th>
+                  <th className="py-3.5 px-4">Student (طالب علم)</th>
                   <th className="py-3.5 px-4">Type</th>
-                  <th className="py-3.5 px-4">Course</th>
-                  <th className="py-3.5 px-4">Contact</th>
+                  <th className="py-3.5 px-4">Course (کورس)</th>
+                  <th className="py-3.5 px-4">Contact & WhatsApp</th>
                   <th className="py-3.5 px-4">Country & TZ</th>
                   <th className="py-3.5 px-4">Status</th>
                   <th className="py-3.5 px-4 text-right">Action</th>
@@ -347,7 +435,7 @@ export const AdminDashboard = () => {
                 {filteredApps.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="py-8 text-center text-slate-400">
-                      No applications found.
+                      No applications found. (کوئی درخواست نہیں ملی)
                     </td>
                   </tr>
                 ) : (
@@ -356,7 +444,7 @@ export const AdminDashboard = () => {
                       <td className="py-3.5 px-4">
                         <div className="font-bold text-slate-900">{app.student_name}</div>
                         <div className="text-[11px] text-slate-500">
-                          Age: {app.student_age} {app.is_child && `(Guardian: ${app.guardian_name || 'N/A'})`}
+                          عمر: {app.student_age} سال {app.guardian_name ? `(سرپرست: ${app.guardian_name})` : ''}
                         </div>
                       </td>
 
@@ -374,9 +462,20 @@ export const AdminDashboard = () => {
                         {app.course_title || `Course #${app.course_id}`}
                       </td>
 
-                      <td className="py-3.5 px-4 text-[11px]">
-                        <div>{app.contact_phone}</div>
+                      <td className="py-3.5 px-4 text-[11px] space-y-1">
+                        <div className="font-mono text-slate-800">{app.contact_phone}</div>
                         <div className="text-slate-400">{app.contact_email}</div>
+                        {app.contact_phone && (
+                          <a
+                            href={`https://wa.me/${app.contact_phone.replace(/\D/g, '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-[10px] border border-emerald-200 transition-colors"
+                          >
+                            <MessageCircle className="w-3 h-3 text-[#25D366]" />
+                            <span>واٹس ایپ چیٹ</span>
+                          </a>
+                        )}
                       </td>
 
                       <td className="py-3.5 px-4 text-[11px]">
@@ -426,25 +525,42 @@ export const AdminDashboard = () => {
 
                 <div className="space-y-3 text-xs text-slate-700 leading-relaxed max-h-[60vh] overflow-y-auto">
                   <div className="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl">
-                    <div><strong>Student:</strong> {selectedApp.student_name}</div>
-                    <div><strong>Age:</strong> {selectedApp.student_age}</div>
-                    <div><strong>Guardian:</strong> {selectedApp.guardian_name || 'N/A'}</div>
-                    <div><strong>Relation:</strong> {selectedApp.guardian_relation || 'N/A'}</div>
-                    <div><strong>Phone:</strong> {selectedApp.contact_phone}</div>
-                    <div><strong>Email:</strong> {selectedApp.contact_email}</div>
-                    <div><strong>Country:</strong> {selectedApp.country}</div>
-                    <div><strong>Timezone:</strong> {selectedApp.timezone}</div>
+                    <div><strong>طالب علم:</strong> {selectedApp.student_name}</div>
+                    <div><strong>عمر:</strong> {selectedApp.student_age} سال</div>
+                    <div><strong>والد / سرپرست:</strong> {selectedApp.guardian_name || 'N/A'}</div>
+                    <div><strong>رشتہ:</strong> {selectedApp.guardian_relation || 'N/A'}</div>
+                    <div><strong>فون / واٹس ایپ:</strong> {selectedApp.contact_phone}</div>
+                    <div><strong>ای میل:</strong> {selectedApp.contact_email}</div>
+                    <div><strong>ملک:</strong> {selectedApp.country}</div>
+                    <div><strong>ٹائم زون:</strong> {selectedApp.timezone}</div>
                   </div>
 
                   <div>
-                    <strong>Preferred Schedule:</strong> {selectedApp.preferred_days} ({selectedApp.preferred_time})
+                    <strong>کورس:</strong> {selectedApp.course_title}
                   </div>
                   <div>
-                    <strong>Language:</strong> {selectedApp.preferred_language}
+                    <strong>اوقات / ایام:</strong> {selectedApp.preferred_days} ({selectedApp.preferred_time})
                   </div>
+                  <div>
+                    <strong>زبان:</strong> {selectedApp.preferred_language}
+                  </div>
+
+                  {selectedApp.contact_phone && (
+                    <div className="pt-1">
+                      <a
+                        href={`https://wa.me/${selectedApp.contact_phone.replace(/\D/g, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-xs shadow-xs"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        <span>طالب علم سے واٹس ایپ پر رابطہ کریں</span>
+                      </a>
+                    </div>
+                  )}
 
                   <div className="pt-2">
-                    <label className="block font-semibold mb-1">Administrative Notes:</label>
+                    <label className="block font-semibold mb-1">Administrative Notes (نوٹس):</label>
                     <textarea
                       rows={2}
                       placeholder="Add private administrative notes..."
@@ -456,31 +572,162 @@ export const AdminDashboard = () => {
                 </div>
 
                 {/* Status Decision Buttons */}
-                <div className="flex flex-wrap items-center justify-end gap-2 pt-2 border-t">
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t">
                   <button
-                    onClick={() => handleStatusChange(selectedApp.id, 'Approved', 'Trial Scheduled')}
-                    className="px-4 py-2 bg-emerald-700 text-white font-bold rounded-xl text-xs hover:bg-emerald-800 transition-colors"
+                    onClick={() => handleDeleteApplication(selectedApp.id)}
+                    className="px-3 py-2 bg-rose-50 text-rose-700 border border-rose-200 font-bold rounded-xl text-xs hover:bg-rose-100 flex items-center gap-1 transition-colors"
                   >
-                    <span>Approve & Enroll</span>
-                    <span className="opacity-80 font-arabic text-[10px] ml-1.5">(منظور کریں)</span>
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>حذف کریں (Delete)</span>
                   </button>
 
-                  <button
-                    onClick={() => handleStatusChange(selectedApp.id, 'More Information Required')}
-                    className="px-3 py-2 bg-amber-500 text-slate-950 font-bold rounded-xl text-xs hover:bg-amber-600"
-                  >
-                    <span>Request Info</span>
-                    <span className="opacity-80 font-arabic text-[10px] ml-1.5">(مزید معلومات)</span>
-                  </button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      onClick={() => handleStatusChange(selectedApp.id, 'Approved', 'Trial Scheduled')}
+                      className="px-4 py-2 bg-emerald-700 text-white font-bold rounded-xl text-xs hover:bg-emerald-800 transition-colors"
+                    >
+                      <span>منظور کریں (Approve)</span>
+                    </button>
 
-                  <button
-                    onClick={() => handleStatusChange(selectedApp.id, 'Rejected')}
-                    className="px-3 py-2 bg-red-100 text-red-700 font-bold rounded-xl text-xs hover:bg-red-200"
-                  >
-                    <span>Reject</span>
-                    <span className="opacity-80 font-arabic text-[10px] ml-1.5">(مسترد کریں)</span>
+                    <button
+                      onClick={() => handleStatusChange(selectedApp.id, 'Rejected')}
+                      className="px-3 py-2 bg-red-100 text-red-700 font-bold rounded-xl text-xs hover:bg-red-200 transition-colors"
+                    >
+                      <span>مسترد کریں (Reject)</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Add Manual Application Modal */}
+          {showAddAppModal && (
+            <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+              <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl border border-slate-200">
+                <div className="flex items-center justify-between pb-3 border-b">
+                  <h3 className="font-bold text-base text-slate-900">
+                    نئی درخواست شامل کریں (Add New Application)
+                  </h3>
+                  <button onClick={() => setShowAddAppModal(false)} className="text-slate-400 hover:text-slate-600">
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
+
+                <form onSubmit={handleCreateManualApplication} className="space-y-4 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-semibold mb-1">طالب علم کا نام (Student Name) *</label>
+                      <input
+                        type="text"
+                        required
+                        value={newStudentName}
+                        onChange={(e) => setNewStudentName(e.target.value)}
+                        placeholder="مثلاً: محمد احمد"
+                        className="w-full p-2.5 rounded-xl border border-slate-200"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-semibold mb-1">عمر (Age)</label>
+                      <input
+                        type="number"
+                        value={newStudentAge}
+                        onChange={(e) => setNewStudentAge(e.target.value)}
+                        placeholder="10"
+                        className="w-full p-2.5 rounded-xl border border-slate-200"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-semibold mb-1">والد / سرپرست کا نام (Guardian Name)</label>
+                      <input
+                        type="text"
+                        value={newGuardianName}
+                        onChange={(e) => setNewGuardianName(e.target.value)}
+                        placeholder="والد کا نام"
+                        className="w-full p-2.5 rounded-xl border border-slate-200"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-semibold mb-1">فون / واٹس ایپ نمبر (Phone) *</label>
+                      <input
+                        type="text"
+                        required
+                        value={newPhone}
+                        onChange={(e) => setNewPhone(e.target.value)}
+                        placeholder="مثلاً: 03001234567"
+                        className="w-full p-2.5 rounded-xl border border-slate-200"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-semibold mb-1">ای میل (Email)</label>
+                      <input
+                        type="email"
+                        value={newEmail}
+                        onChange={(e) => setNewEmail(e.target.value)}
+                        placeholder="email@example.com"
+                        className="w-full p-2.5 rounded-xl border border-slate-200"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-semibold mb-1">ملک (Country)</label>
+                      <input
+                        type="text"
+                        value={newCountry}
+                        onChange={(e) => setNewCountry(e.target.value)}
+                        placeholder="Pakistan / UK / USA"
+                        className="w-full p-2.5 rounded-xl border border-slate-200"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-semibold mb-1">منتخب کورس (Course)</label>
+                      <select
+                        value={newCourseId}
+                        onChange={(e) => setNewCourseId(Number(e.target.value))}
+                        className="w-full p-2.5 rounded-xl border border-slate-200 bg-white"
+                      >
+                        {courses.map(c => (
+                          <option key={c.id} value={c.id}>{c.title_ur} ({c.title_en})</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block font-semibold mb-1">درخواست کی قسم (Type)</label>
+                      <select
+                        value={newAppType}
+                        onChange={(e) => setNewAppType(e.target.value as any)}
+                        className="w-full p-2.5 rounded-xl border border-slate-200 bg-white"
+                      >
+                        <option value="Admission">Admission (باقاعدہ داخلہ)</option>
+                        <option value="Free Trial">Free Trial (مفت آزمائشی کلاس)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-3 border-t">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddAppModal(false)}
+                      className="px-4 py-2 border border-slate-200 rounded-xl font-bold text-slate-600 hover:bg-slate-50"
+                    >
+                      منسوخ (Cancel)
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold"
+                    >
+                      محفوظ کریں (Save Application)
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           )}

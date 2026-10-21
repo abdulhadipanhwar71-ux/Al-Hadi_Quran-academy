@@ -245,6 +245,17 @@ export const api = {
 
   async submitAdmission(data: ApplicationSubmission): Promise<{ message: string; success: boolean }> {
     try {
+      const res = await fetch(`${API_BASE}/admissions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (_) {}
+
+    try {
       const res = await fetch(`${API_BASE}/admission`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -351,18 +362,34 @@ export const api = {
   },
 
   async getApplications(status?: string, type?: string, search?: string): Promise<ApplicationRecord[]> {
-    try {
-      const params = new URLSearchParams();
-      if (status) params.set('status_filter', status);
-      if (type) params.set('type_filter', type);
-      if (search) params.set('search', search);
+    const params = new URLSearchParams();
+    if (status) params.set('status_filter', status);
+    if (type) params.set('type_filter', type);
+    if (search) params.set('search', search);
 
+    // 1. Try cloud serverless endpoint /api/admissions
+    try {
+      const res = await fetch(`${API_BASE}/admissions?${params.toString()}`, {
+        headers: getAuthHeader(),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) return data;
+      }
+    } catch (_) {}
+
+    // 2. Try backend /api/admin/applications
+    try {
       const res = await fetch(`${API_BASE}/admin/applications?${params.toString()}`, {
         headers: getAuthHeader(),
       });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) return data;
+      }
     } catch (_) {}
 
+    // 3. Fallback to local admissions if offline
     let localApps: any[] = [];
     try {
       localApps = JSON.parse(localStorage.getItem('alhadi_local_admissions') || '[]');
@@ -402,6 +429,17 @@ export const api = {
   },
 
   async updateApplicationStatus(appId: number, statusData: { application_status?: string; trial_status?: string; notes?: string }) {
+    // 1. Try cloud serverless endpoint
+    try {
+      const res = await fetch(`${API_BASE}/admissions`, {
+        method: 'PATCH',
+        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: appId, ...statusData }),
+      });
+      if (res.ok) return await res.json();
+    } catch (_) {}
+
+    // 2. Try backend endpoint
     try {
       const res = await fetch(`${API_BASE}/admin/applications/${appId}/status`, {
         method: 'PATCH',
@@ -411,6 +449,7 @@ export const api = {
       if (res.ok) return await res.json();
     } catch (_) {}
 
+    // 3. Fallback to localStorage
     try {
       const localApps: any[] = JSON.parse(localStorage.getItem('alhadi_local_admissions') || '[]');
       if (localApps[appId - 1]) {
@@ -422,6 +461,24 @@ export const api = {
     } catch (_) {}
 
     return { message: 'Status updated successfully' };
+  },
+
+  async deleteApplication(appId: number) {
+    try {
+      const res = await fetch(`${API_BASE}/admissions?id=${appId}`, {
+        method: 'DELETE',
+        headers: getAuthHeader(),
+      });
+      if (res.ok) return await res.json();
+    } catch (_) {}
+
+    try {
+      const localApps: any[] = JSON.parse(localStorage.getItem('alhadi_local_admissions') || '[]');
+      const filtered = localApps.filter((_, idx) => idx + 1 !== appId);
+      localStorage.setItem('alhadi_local_admissions', JSON.stringify(filtered));
+    } catch (_) {}
+
+    return { message: 'Application deleted successfully' };
   },
 
   async getStudents(search?: string, status?: string): Promise<StudentRecord[]> {

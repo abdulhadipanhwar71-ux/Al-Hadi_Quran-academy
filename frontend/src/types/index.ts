@@ -105,6 +105,7 @@ export interface ApplicationSubmission {
   preferred_language: string;
   application_type: 'Admission' | 'Free Trial';
   website_bot_trap?: string;
+  notes?: string;
 }
 
 export interface ApplicationRecord {
