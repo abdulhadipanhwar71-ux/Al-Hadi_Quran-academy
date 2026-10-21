@@ -1,0 +1,9 @@
+{
+  "name": "alhadi-quran-academy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Al-Hadi Online Quran Academy - Official Web Platform",
+  "scripts": {
+    "build": "npm run build --prefix frontend"
+  }
+}

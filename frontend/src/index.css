@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: auto !important; /* Enforces instant, direct navigation per requirement 6 */
+  }
+
+  body {
+    @apply bg-[#fcfaf7] text-slate-800 antialiased;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+}
+
+.font-arabic {
+  font-family: 'Amiri', 'Noto Naskh Arabic', serif;
+}
+
+.font-urdu {
+  font-family: 'Noto Nastaliq Urdu', 'Noto Naskh Arabic', serif;
+}
+
+/* Islamic Geometric Subtle Background Motif */
+.islamic-pattern {
+  background-color: #064e3b;
+  background-image: radial-gradient(rgba(217, 119, 6, 0.15) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+.islamic-pattern-light {
+  background-color: #fcfaf7;
+  background-image: radial-gradient(rgba(4, 120, 87, 0.08) 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+/* RTL Helpers */
+[dir="rtl"] {
+  text-align: right;
+}
+
+/* Direct transition reset to guarantee fast direct page loads without lagging animations */
+.no-lag-transition {
+  transition-duration: 150ms;
+}
