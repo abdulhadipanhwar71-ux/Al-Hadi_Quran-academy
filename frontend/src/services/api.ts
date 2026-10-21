@@ -7,6 +7,7 @@ import {
 import fallbackCourses from '../data/courses.json';
 import fallbackDuas from '../data/duas.json';
 import fallbackKalimas from '../data/kalimas.json';
+import fallbackSurahs from '../data/surahs.json';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
@@ -119,9 +120,12 @@ export const api = {
   async getSurahs(): Promise<QuranSurah[]> {
     try {
       const res = await fetch(`${API_BASE}/quran/surahs`);
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) return data;
+      }
     } catch (_) {}
-    return [];
+    return fallbackSurahs as unknown as QuranSurah[];
   },
 
   async getSurahDetail(surahNumber: number, offset = 0, limit = 50): Promise<{
@@ -131,9 +135,79 @@ export const api = {
     limit: number;
     ayahs: QuranAyah[];
   }> {
-    const res = await fetch(`${API_BASE}/quran/surahs/${surahNumber}?offset=${offset}&limit=${limit}`);
-    if (!res.ok) throw new Error(`Failed to load Surah #${surahNumber}`);
-    return res.json();
+    try {
+      const res = await fetch(`${API_BASE}/quran/surahs/${surahNumber}?offset=${offset}&limit=${limit}`);
+      if (res.ok) return await res.json();
+    } catch (_) {}
+
+    const surahsList = (fallbackSurahs as unknown as QuranSurah[]);
+    const currentSurah = surahsList.find(s => s.surah_number === surahNumber) || {
+      surah_number: surahNumber,
+      name_arabic: `سورة ${surahNumber}`,
+      name_english: `Surah ${surahNumber}`,
+      english_meaning: '',
+      total_ayahs: 0,
+      revelation_type: 'Meccan'
+    };
+
+    // First attempt: Local static JSON bundled in public directory
+    try {
+      const res = await fetch(`/quran/${surahNumber}.json`);
+      if (res.ok) {
+        const allAyahs: QuranAyah[] = await res.json();
+        return {
+          surah: currentSurah,
+          total_ayahs: allAyahs.length,
+          offset,
+          limit,
+          ayahs: allAyahs.slice(offset, offset + limit)
+        };
+      }
+    } catch (_) {}
+
+    // Second attempt: Public global Quran API fallback
+    try {
+      const res = await fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}/editions/quran-uthmani,ur.jalandhry,en.sahih`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data && json.data.length === 3) {
+          const arAyahs = json.data[0].ayahs;
+          const urAyahs = json.data[1].ayahs;
+          const enAyahs = json.data[2].ayahs;
+          const mappedAyahs: QuranAyah[] = arAyahs.map((a: any, idx: number) => ({
+            id: a.number,
+            surah_number: surahNumber,
+            ayah_number_in_surah: a.numberInSurah,
+            global_ayah_number: a.number,
+            juz: a.juz,
+            manzil: a.manzil,
+            page: a.page,
+            ruku: a.ruku,
+            sajda: Boolean(a.sajda),
+            text_arabic: a.text,
+            text_urdu: urAyahs[idx]?.text || '',
+            text_english: enAyahs[idx]?.text || '',
+            audio_url: `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${a.number}.mp3`
+          }));
+
+          return {
+            surah: currentSurah,
+            total_ayahs: mappedAyahs.length,
+            offset,
+            limit,
+            ayahs: mappedAyahs.slice(offset, offset + limit)
+          };
+        }
+      }
+    } catch (_) {}
+
+    return {
+      surah: currentSurah,
+      total_ayahs: 0,
+      offset,
+      limit,
+      ayahs: []
+    };
   },
 
   async searchQuran(query: string): Promise<QuranAyah[]> {
